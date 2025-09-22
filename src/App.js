@@ -22,6 +22,9 @@ import { getAnalytics } from "firebase/analytics";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 
+// ✅ import bad-words filter
+import { Filter } from "bad-words";
+
 // --- Firebase Config ---
 const firebaseConfig = {
   apiKey: "AIzaSyCIpcR0M_h1axraNls6c0rj5CQZZvgb1nk",
@@ -84,6 +87,12 @@ function SignOut() {
   );
 }
 
+// --- Helper: Whole word censor only ---
+function censorBadWords(text) {
+  const filter = new Filter();
+  return filter.clean(text);
+}
+
 // --- Chat Room ---
 function ChatRoom() {
   const dummy = useRef();
@@ -96,11 +105,15 @@ function ChatRoom() {
 
   const sendMessage = async (e) => {
     e.preventDefault();
+    if (!formValue.trim()) return;
 
     const { uid, photoURL } = auth.currentUser;
 
+    // 🔥 Apply filter before sending
+    const cleanedText = censorBadWords(formValue);
+
     await addDoc(messagesRef, {
-      text: formValue,
+      text: cleanedText,
       createdAt: serverTimestamp(),
       uid,
       photoURL,
