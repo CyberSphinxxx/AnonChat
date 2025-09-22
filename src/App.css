@@ -69,6 +69,7 @@ main {
   display: flex;
   flex-direction: column;
   scrollbar-width: thin;
+  scrollbar-color: #00ff9d #000; /* For Firefox */
 }
 
 main::-webkit-scrollbar {
@@ -78,10 +79,15 @@ main::-webkit-scrollbar {
 main::-webkit-scrollbar-track {
   background: #000;
 }
-
 main::-webkit-scrollbar-thumb {
   background: #00ff9d;
   box-shadow: 0 0 10px #00ff9d;
+  border-radius: 10px;
+}
+
+/* Firefox scrollbar thumb */
+main::-moz-scrollbar-thumb {
+  background: #00ff9d;
   border-radius: 10px;
 }
 
