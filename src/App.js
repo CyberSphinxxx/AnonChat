@@ -99,26 +99,12 @@ function ChatRoom() {
 
     const { uid, photoURL } = auth.currentUser;
 
-    // Call Vercel API for moderation
-    const res = await fetch("/api/detect", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ uid, text: formValue }),
+    await addDoc(messagesRef, {
+      text: formValue,
+      createdAt: serverTimestamp(),
+      uid,
+      photoURL,
     });
-
-    const result = await res.json();
-
-    if (result.status === "ok") {
-      // Store only safe messages in Firestore
-      await addDoc(messagesRef, {
-        text: formValue,
-        createdAt: serverTimestamp(),
-        uid,
-        photoURL,
-      });
-    } else if (result.status === "banned") {
-      alert("🚫 You have been banned for violating the rules!");
-    }
 
     setFormValue("");
     dummy.current.scrollIntoView({ behavior: "smooth" });
@@ -128,7 +114,9 @@ function ChatRoom() {
     <>
       <main>
         {messages &&
-          messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
+          messages.map((msg, index) => (
+            <ChatMessage key={msg.id || index} message={msg} />
+          ))}
 
         <span ref={dummy}></span>
       </main>
